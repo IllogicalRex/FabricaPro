@@ -1,0 +1,14 @@
+C:\Users\e-javelazquez\source\repos\FabricaPro\FabricaPro\bin\Debug\netcoreapp2.2\FabricaPro.deps.json
+C:\Users\e-javelazquez\source\repos\FabricaPro\FabricaPro\bin\Debug\netcoreapp2.2\FabricaPro.runtimeconfig.json
+C:\Users\e-javelazquez\source\repos\FabricaPro\FabricaPro\bin\Debug\netcoreapp2.2\FabricaPro.runtimeconfig.dev.json
+C:\Users\e-javelazquez\source\repos\FabricaPro\FabricaPro\bin\Debug\netcoreapp2.2\FabricaPro.dll
+C:\Users\e-javelazquez\source\repos\FabricaPro\FabricaPro\bin\Debug\netcoreapp2.2\FabricaPro.pdb
+C:\Users\e-javelazquez\source\repos\FabricaPro\FabricaPro\obj\Debug\netcoreapp2.2\FabricaPro.csprojAssemblyReference.cache
+C:\Users\e-javelazquez\source\repos\FabricaPro\FabricaPro\obj\Debug\netcoreapp2.2\FabricaPro.csproj.CoreCompileInputs.cache
+C:\Users\e-javelazquez\source\repos\FabricaPro\FabricaPro\obj\Debug\netcoreapp2.2\FabricaPro.RazorAssemblyInfo.cache
+C:\Users\e-javelazquez\source\repos\FabricaPro\FabricaPro\obj\Debug\netcoreapp2.2\FabricaPro.RazorAssemblyInfo.cs
+C:\Users\e-javelazquez\source\repos\FabricaPro\FabricaPro\obj\Debug\netcoreapp2.2\FabricaPro.AssemblyInfoInputs.cache
+C:\Users\e-javelazquez\source\repos\FabricaPro\FabricaPro\obj\Debug\netcoreapp2.2\FabricaPro.AssemblyInfo.cs
+C:\Users\e-javelazquez\source\repos\FabricaPro\FabricaPro\obj\Debug\netcoreapp2.2\FabricaPro.RazorTargetAssemblyInfo.cache
+C:\Users\e-javelazquez\source\repos\FabricaPro\FabricaPro\obj\Debug\netcoreapp2.2\FabricaPro.dll
+C:\Users\e-javelazquez\source\repos\FabricaPro\FabricaPro\obj\Debug\netcoreapp2.2\FabricaPro.pdb
