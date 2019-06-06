@@ -28,14 +28,14 @@ GO
 
 ------------------------------------------------------------------------------------------------------------------------------
  --CONSULTAR TODOS LOS PROYECTOS
-CREATE PROCEDURE Project_R
+create PROCEDURE Project_RAll
 AS
 	SELECT Pro_ID, Name, StartDate, EndDate, ProyectLeader
 	FROM [Projects]
 	WHERE IsActive = 1
 GO
 
-EXECUTE Project_R
+EXECUTE Project_RAll
 GO
 
 ------------------------------------------------------------------------------------------------------------------------------
@@ -126,6 +126,17 @@ EXECUTE Human_Resources_R
 GO
 
 ------------------------------------------------------------------------------------------------------------------------------
+ --CONSULTAR TODOS LOS RECURSOS HUMANOS CON ID
+CREATE PROCEDURE Resource_R_ByID
+@Rec_ID Int
+AS
+	SELECT Rec_ID, Name, LastName, Position, Email
+	FROM [Human_Resources]
+	WHERE IsActive = 1 AND Rec_ID = @Rec_ID
+GO
+
+EXEC Resource_R_ByID 2
+------------------------------------------------------------------------------------------------------------------------------
 --ELIMINAR RECURSOS HUMANOS
 CREATE PROCEDURE Human_Resources_D
 	@Rec_ID Int
@@ -163,53 +174,112 @@ GO
 --								ASIGNACION DE PROYECTOS
 --====================================================================================================
 -- CONSULTAR TODOS LOS PROYECTOS QUE NO TENGAN ASIGNADO RECURSOS
-CREATE PROCEDURE Projects_Resources_RP
+alter PROCEDURE Projects_Resources_RPAll
 AS
 SELECT 
-	P.*
+	P.Pro_ID,
+	p.Name,
+	p.StartDate,
+	p.EndDate,
+	p.ProyectLeader
 FROM  Projects p 
 	LEFT JOIN [Projects_Resources]  pr ON pr.Pro_ID = p.Pro_ID
 	LEFT JOIN Human_Resources hr ON hr.Rec_ID = pr.Rec_ID 
-WHERE hr.Rec_ID IS NULL AND P.IsActive = 1
+WHERE hr.Rec_ID IS NULL --AND P.IsActive = 1
+GO
+EXEC Projects_Resources_RP
 GO
 
--- CONSULTAR TODOS LOS RECURSOS QUE NO TENGAN ASIGNADO PROYECTO
-CREATE PROCEDURE Projects_Resources_RR
+-- CONSULTAR TODOS LOS PROYECTOS QUE NO TENGAN ASIGNADO RECURSOS
+ALTER PROCEDURE Projects_Resources_RP
+	@currentPage AS INT,
+	@sizeData AS INT
 AS
 SELECT 
-	hr.*
+	P.Pro_ID,
+	p.Name,
+	p.StartDate,
+	p.EndDate,
+	p.ProyectLeader
+FROM  Projects p 
+	LEFT JOIN [Projects_Resources]  pr ON pr.Pro_ID = p.Pro_ID
+	LEFT JOIN Human_Resources hr ON hr.Rec_ID = pr.Rec_ID 
+WHERE hr.Rec_ID IS NULL --AND P.IsActive = 1
+ORDER BY hr.Rec_ID
+	OFFSET (@currentPage-1)*@sizeData ROWS 
+	FETCH NEXT @sizeData ROWS ONLY
+GO
+EXEC Projects_Resources_RP 2, 6
+GO
+
+
+-- CONSULTAR TODOS LOS RECURSOS QUE NO TENGAN ASIGNADO PROYECTO
+Create PROCEDURE Projects_Resources_RRAll
+AS
+SELECT 
+	hr.Rec_ID,
+	hr.Name,
+	hr.LastName,
+	hr.Position,
+	hr.Email
 FROM  Human_Resources  hr
 	LEFT JOIN [Projects_Resources]  pr ON pr.Rec_ID = hr.Rec_ID 
 	LEFT JOIN Projects p ON  p.Pro_ID = pr.Pro_ID
-WHERE (p.Pro_ID IS NULL AND hr.IsActive = 1)
+WHERE (p.Pro_ID IS NULL) --AND hr.IsActive = 1)
+GO
+exec Projects_Resources_RRAll
+GO
+
+-- CONSULTAR TODOS LOS RECURSOS QUE NO TENGAN ASIGNADO PROYECTO PAGINADO
+ALTER PROCEDURE Projects_Resources_RR
+	@currentPage AS INT,
+	@sizeData AS INT
+AS
+SELECT 
+	hr.Rec_ID,
+	hr.Name,
+	hr.LastName,
+	hr.Position,
+	hr.Email
+FROM  Human_Resources  hr
+	LEFT JOIN [Projects_Resources]  pr ON pr.Rec_ID = hr.Rec_ID 
+	LEFT JOIN Projects p ON  p.Pro_ID = pr.Pro_ID
+WHERE (p.Pro_ID IS NULL) --AND hr.IsActive = 1)
+ORDER BY hr.Rec_ID
+	OFFSET (@currentPage-1)*@sizeData ROWS 
+	FETCH NEXT @sizeData ROWS ONLY
+GO
+exec Projects_Resources_RR 2,1
 GO
 
 -- PROCEDIMIENTO: PROYECTOS CON RECURSOS ASIGNADOS 
 
-CREATE PROCEDURE Projects_Resources_R
+ALTER PROCEDURE Projects_Resources_R
 AS
 	SELECT 
 		p.Pro_ID, 
-		p.Name, 
+		p.Name AS NameProject, 
 		hr.Rec_ID, 
-		hr.Name
+		hr.Name AS NameResource
 	FROM  Human_Resources  hr
 		INNER JOIN [Projects_Resources]  pr ON pr.Rec_ID = hr.Rec_ID 
 		INNER JOIN Projects p ON  p.Pro_ID = pr.Pro_ID
-	WHERE p.IsActive = 1
+	--WHERE p.IsActive = 1
 GO
 EXEC Projects_Resources_R
 GO
 
 --ASINGAR UN PROYECTO
-CREATE PROCEDURE Projects_Resources_C
+alter PROCEDURE Projects_Resources_C
 	@Pro_ID INT,
 	@Rec_ID INT
 AS
 	INSERT INTO [Projects_Resources] (Pro_ID, Rec_ID) VALUES (@Pro_ID,@Rec_ID)
 	SELECT @Pro_ID AS Pro_ID, @Rec_ID AS Rec_ID
+	SELECT @Pro_ID AS Pro_ID, @Rec_ID AS Rec_ID
 GO
-
+EXEC Projects_Resources_C 1, 1
+GO
 --DESASIFNAR UN PROYECTO
 CREATE PROCEDURE Projects_Resources_D
 	@Pro_ID INT,
@@ -233,5 +303,40 @@ EXEC Projects_Resources_D 2, 1
 
 EXEC Projects_Resources_R
 
-	
-	
+
+DECLARE @pagenum AS INT
+DECLARE @pagesize AS INT 
+SET @pagenum = 2;
+SET @pagesize = 5;
+SELECT 
+	P.Pro_ID,
+	p.Name,
+	p.StartDate,
+	p.EndDate,
+	p.ProyectLeader
+FROM  Projects p 
+	LEFT JOIN [Projects_Resources]  pr ON pr.Pro_ID = p.Pro_ID
+	LEFT JOIN Human_Resources hr ON hr.Rec_ID = pr.Rec_ID 
+WHERE hr.Rec_ID IS NULL AND P.IsActive = 1
+ORDER BY HR.Rec_ID
+OFFSET (@pagenum - 1) * @pagesize ROWS 
+FETCH NEXT @pagesize ROWS ONLY;
+
+
+
+--CONSULTAR PROJECTOS CON PAGINACION
+ALTER PROCEDURE Project_R
+	@currentPage AS INT,
+	@sizeData AS INT
+AS
+	SELECT Pro_ID, Name, StartDate, EndDate, ProyectLeader
+	FROM [Projects]
+	--WHERE IsActive = 1
+	ORDER BY Pro_ID
+	OFFSET (@currentPage-1)*@sizeData ROWS 
+	FETCH NEXT @sizeData ROWS ONLY 
+GO
+
+EXEC Project_R 2,5
+
+SELECT * FROM Projects

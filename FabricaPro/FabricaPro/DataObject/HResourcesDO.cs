@@ -9,31 +9,42 @@ namespace FabricaPro.DataObject
 {
     public class HResourcesDO
     {
-        public HResourcesDAO _projectDAO = new HResourcesDAO();
+        public HResourcesDAO _resourcetDAO = new HResourcesDAO();
 
         // Metodo para Consultar GET
-        public List<HResourcesDTO> Get()
+        public List<HResourcesDTO> GetHResourcesAll()
         {
-            return _projectDAO.GetHResources();
+            return _resourcetDAO.GetHResourcesAll();
         }
 
-        public int Post(HResourcesDTO value)
+        public List<HResourcesDTO> GetHResources(int currentPage, int sizeData)
         {
-            int data = _projectDAO.PostHResources(value);
+            return _resourcetDAO.GetHResources(currentPage, sizeData);
+        }
+
+        public HResourcesDTO GetResourceByID(int id)
+        {
+            HResourcesDTO data = _resourcetDAO.GetResourceByID(id);
+            return data;
+        }
+
+            public int Post(HResourcesDTO value)
+        {
+            int data = _resourcetDAO.PostHResources(value);
             return data;
         }
 
         // Actualizar Proyecto
         public int Put(int Pro_id, HResourcesDTO value)
         {
-            int data = _projectDAO.PutHResources(Pro_id, value);
+            int data = _resourcetDAO.PutHResources(Pro_id, value);
             return data;
         }
 
         // Eliminar un Proyecto DELETE
         public int Delete(int Pro_ID)
         {
-            int data = _projectDAO.DeleteResources(Pro_ID);
+            int data = _resourcetDAO.DeleteResources(Pro_ID);
             return data;
         }
     }

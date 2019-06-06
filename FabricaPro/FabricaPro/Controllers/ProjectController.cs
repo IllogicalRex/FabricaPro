@@ -10,22 +10,38 @@ using System.Threading.Tasks;
 
 namespace FabricaPro.Controllers
 {
-    
+
     [Route("api/[controller]")]
     [ApiController]
-    public class ProjectController: ControllerBase
+    public class ProjectController : ControllerBase
     {
         public ProjectMgr _projectMgr = new ProjectMgr();
 
         //[EnableCors("AnotherPolicy")]
+        [Route("all")]
         [HttpGet]
-        public List<ProjectDTO> Get()
+        public List<ProjectDTO> GetAll()
         {
-            List<ProjectDTO> data = _projectMgr.Get();
+            List<ProjectDTO> data = _projectMgr.GetAll();
             return data;
         }
 
-        [HttpGet("{id}")]
+        [HttpGet]
+        public List<ProjectDTO> Get(int currentPage, int sizeData)
+        {
+            List<ProjectDTO> data = _projectMgr.Get(currentPage, sizeData);
+            return data;
+        }
+
+        [Route("ByFilter")]
+        [HttpPost]
+        public List<ProjectDTO> GetProjectByFilter([FromBody] ProjectDTO filter)
+        {
+            List<ProjectDTO> data = _projectMgr.GetProjectByFilter(filter);
+            return data;
+        }
+
+        [HttpGet("ByID/{id}")]
         public ProjectDTO GetByID(int id)
         {
             ProjectDTO data = _projectMgr.GetByID(id);

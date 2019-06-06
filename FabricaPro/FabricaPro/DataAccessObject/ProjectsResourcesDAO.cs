@@ -1,32 +1,49 @@
 ﻿using FabricaPro.DTO;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace FabricaPro.DataAccessObject
 {
-    public class ProjectDAO
+    public class ProjectsResourcesDAO
     {
-
-       
         SqlConnection connection = new SqlConnection("Server=E-JAVELAZQUEZ;Database=FabricaPro;Trusted_Connection=True;");
         SqlCommand command;
-        public ProjectDAO() 
+
+        public ProjectsResourcesDAO()
         {
 
         }
 
-        public List<ProjectDTO> GetAll()
+        public List<ProjectResourcesDTO> GetHProjectResources()
+        {
+            List<ProjectResourcesDTO> lista = new List<ProjectResourcesDTO>();
+            command = new SqlCommand("Projects_Resources_R", connection);
+            command.CommandType = CommandType.StoredProcedure;
+            connection.Open();
+            SqlDataReader rdr = command.ExecuteReader(CommandBehavior.CloseConnection);
+            ProjectResourcesDTO obj;
+            while (rdr.Read())    // En caso de que exista varios valores de retorno sin usar DataTable
+            {
+                obj = new ProjectResourcesDTO();
+                obj.Pro_ID = rdr.GetInt32(rdr.GetOrdinal("Pro_ID"));
+                obj.NameProject = rdr.GetString(rdr.GetOrdinal("NameProject"));
+                obj.Rec_ID = rdr.GetInt32(rdr.GetOrdinal("Rec_ID"));
+                obj.NameResource = rdr.GetString(rdr.GetOrdinal("NameResource"));
+
+                lista.Add(obj);
+            }
+            connection.Close();
+            return lista;
+        }
+
+        public List<ProjectDTO> GetProjectWithoutResourcesAll()
         {
             List<ProjectDTO> lista = new List<ProjectDTO>();
-            command = new SqlCommand("Project_RAll", connection);
+            command = new SqlCommand("Projects_Resources_RPAll", connection);
             command.CommandType = CommandType.StoredProcedure;
             connection.Open();
             SqlDataReader rdr = command.ExecuteReader(CommandBehavior.CloseConnection);
@@ -46,10 +63,10 @@ namespace FabricaPro.DataAccessObject
             return lista;
         }
 
-        public List<ProjectDTO> GetProject(int currentPage, int sizeData)
+        public List<ProjectDTO> GetProjectWithoutResources(int currentPage, int sizeData)
         {
             List<ProjectDTO> lista = new List<ProjectDTO>();
-            command = new SqlCommand("Project_R", connection);
+            command = new SqlCommand("Projects_Resources_RP", connection);
             command.CommandType = CommandType.StoredProcedure;
             connection.Open();
             command.Parameters.AddWithValue("@currentPage", currentPage);
@@ -64,32 +81,29 @@ namespace FabricaPro.DataAccessObject
                 obj.StartDate = rdr.GetDateTime(rdr.GetOrdinal("StartDate"));
                 obj.EndDate = rdr.GetDateTime(rdr.GetOrdinal("EndDate"));
                 obj.ProyectLeader = rdr.GetString(rdr.GetOrdinal("ProyectLeader"));
-                
+
                 lista.Add(obj);
             }
             connection.Close();
             return lista;
         }
 
-        public List<ProjectDTO> GetProjectByFilter(ProjectDTO filter)
+        public List<HResourcesDTO> GetResourcesWithoutProjectsAll()
         {
-            List<ProjectDTO> lista = new List<ProjectDTO>();
-            command = new SqlCommand("Project_R_ByFilter", connection);
+            List<HResourcesDTO> lista = new List<HResourcesDTO>();
+            command = new SqlCommand("Projects_Resources_RRAll", connection);
             command.CommandType = CommandType.StoredProcedure;
             connection.Open();
-            command.Parameters.AddWithValue("@Name", filter.Name);
-            command.Parameters.AddWithValue("@ProyectLeader", filter.ProyectLeader);
-                
             SqlDataReader rdr = command.ExecuteReader(CommandBehavior.CloseConnection);
-            ProjectDTO obj;
+            HResourcesDTO obj;
             while (rdr.Read())    // En caso de que exista varios valores de retorno sin usar DataTable
             {
-                obj = new ProjectDTO();
-                obj.Pro_ID = rdr.GetInt32(rdr.GetOrdinal("Pro_ID"));
+                obj = new HResourcesDTO();
+                obj.Rec_ID = rdr.GetInt32(rdr.GetOrdinal("Rec_ID"));
                 obj.Name = rdr.GetString(rdr.GetOrdinal("Name"));
-                obj.StartDate = rdr.GetDateTime(rdr.GetOrdinal("StartDate"));
-                obj.EndDate = rdr.GetDateTime(rdr.GetOrdinal("EndDate"));
-                obj.ProyectLeader = rdr.GetString(rdr.GetOrdinal("ProyectLeader"));
+                obj.LastName = rdr.GetString(rdr.GetOrdinal("LastName"));
+                obj.Position = rdr.GetString(rdr.GetOrdinal("Position"));
+                obj.Email = rdr.GetString(rdr.GetOrdinal("Email"));
 
                 lista.Add(obj);
             }
@@ -97,100 +111,73 @@ namespace FabricaPro.DataAccessObject
             return lista;
         }
 
-        public ProjectDTO GetProjectByID(int id)
+        public List<HResourcesDTO> GetResourcesWithoutProjects(int currentPage, int sizeData)
         {
-            ProjectDTO project = null;
-            command = new SqlCommand("Project_R_ByID", connection);
+            List<HResourcesDTO> lista = new List<HResourcesDTO>();
+            command = new SqlCommand("Projects_Resources_RR", connection);
             command.CommandType = CommandType.StoredProcedure;
             connection.Open();
-            command.Parameters.AddWithValue("@Pro_ID", id);
+            command.Parameters.AddWithValue("@currentPage", currentPage);
+            command.Parameters.AddWithValue("@sizeData", sizeData);
             SqlDataReader rdr = command.ExecuteReader(CommandBehavior.CloseConnection);
+            HResourcesDTO obj;
             while (rdr.Read())    // En caso de que exista varios valores de retorno sin usar DataTable
             {
-                project = new ProjectDTO();
-                project.Pro_ID = rdr.GetInt32(rdr.GetOrdinal("Pro_ID"));
-                project.Name = rdr.GetString(rdr.GetOrdinal("Name"));
-                project.StartDate = rdr.GetDateTime(rdr.GetOrdinal("StartDate"));
-                project.EndDate = rdr.GetDateTime(rdr.GetOrdinal("EndDate"));
-                project.ProyectLeader = rdr.GetString(rdr.GetOrdinal("ProyectLeader"));
+                obj = new HResourcesDTO();
+                obj.Rec_ID = rdr.GetInt32(rdr.GetOrdinal("Rec_ID"));
+                obj.Name = rdr.GetString(rdr.GetOrdinal("Name"));
+                obj.LastName = rdr.GetString(rdr.GetOrdinal("LastName"));
+                obj.Position = rdr.GetString(rdr.GetOrdinal("Position"));
+                obj.Email = rdr.GetString(rdr.GetOrdinal("Email"));
+
+                lista.Add(obj);
             }
             connection.Close();
-            return project;
+            return lista;
         }
 
-
-        public int PostProject(ProjectDTO value)
+        public ProjectResourcesDTO PostAsignProRec(ProjectResourcesDTO value)
         {
-            ProjectDTO data = new ProjectDTO();
-            command = new SqlCommand("Project_C", connection);
+            List<ProjectResourcesDTO> lista = new List<ProjectResourcesDTO>();
+            command = new SqlCommand("Projects_Resources_C", connection);
             command.CommandType = CommandType.StoredProcedure;
             connection.Open();
-            command.Parameters.AddWithValue("@Name", value.Name);
-            command.Parameters.AddWithValue("@StartDate", value.StartDate);
-            command.Parameters.AddWithValue("@EndDate", value.EndDate);
-            command.Parameters.AddWithValue("@ProyectLeader", value.ProyectLeader);
-            // command.Parameters.Clear();
+            command.Parameters.AddWithValue("@Pro_ID", value.Pro_ID);
+            command.Parameters.AddWithValue("@Rec_ID", value.Rec_ID);
             SqlDataReader rdr = command.ExecuteReader(CommandBehavior.CloseConnection);
-            int Pro_ID=0;
+            ProjectResourcesDTO obj = null;
             while (rdr.Read())    // En caso de que exista varios valores de retorno sin usar DataTable
             {
-                Pro_ID = rdr.GetInt32(rdr.GetOrdinal("Pro_ID"));
+                obj = new ProjectResourcesDTO();
+                obj.Pro_ID = rdr.GetInt32(rdr.GetOrdinal("Pro_ID"));
+                obj.Rec_ID = rdr.GetInt32(rdr.GetOrdinal("Rec_ID"));
+
+                
             }
             connection.Close();
-            return Pro_ID;
+            return obj;
         }
 
-        public int PutProject(int Pro_id, ProjectDTO value)
+        public ProjectResourcesDTO DeleteDesProRec(int Pro_ID, int Rec_ID)
         {
-            command = new SqlCommand("Project_U", connection);
+            List<ProjectResourcesDTO> lista = new List<ProjectResourcesDTO>();
+            command = new SqlCommand("Projects_Resources_D", connection);
             command.CommandType = CommandType.StoredProcedure;
             connection.Open();
-            command.Parameters.AddWithValue("@Pro_ID", Pro_id);
-            command.Parameters.AddWithValue("@Name", value.Name);
-            command.Parameters.AddWithValue("@StartDate", value.StartDate);
-            command.Parameters.AddWithValue("@EndDate", value.EndDate);
-            command.Parameters.AddWithValue("@ProyectLeader", value.ProyectLeader);
+            command.Parameters.AddWithValue("@Pro_ID", Pro_ID);
+            command.Parameters.AddWithValue("@Rec_ID", Rec_ID);
             SqlDataReader rdr = command.ExecuteReader(CommandBehavior.CloseConnection);
-            int Pro_ID = 0;
+            ProjectResourcesDTO obj = null;
             while (rdr.Read())    // En caso de que exista varios valores de retorno sin usar DataTable
             {
-                Pro_ID = rdr.GetInt32(rdr.GetOrdinal("Pro_ID"));
+                obj = new ProjectResourcesDTO();
+                obj.Pro_ID = rdr.GetInt32(rdr.GetOrdinal("Pro_ID"));
+                obj.Rec_ID = rdr.GetInt32(rdr.GetOrdinal("Rec_ID"));
+
+
             }
             connection.Close();
-            return Pro_ID;
+            return obj;
         }
-
-        public int DeleteProject(int ID)
-        {
-            command = new SqlCommand("Project_D", connection);
-            command.CommandType = CommandType.StoredProcedure;
-            connection.Open();
-            command.Parameters.AddWithValue("@Pro_ID", ID);
-            // command.Parameters.Clear();
-            SqlDataReader rdr = command.ExecuteReader(CommandBehavior.CloseConnection);
-            int Pro_ID = 0;
-            while (rdr.Read())    // En caso de que exista varios valores de retorno sin usar DataTable
-            {
-                Pro_ID = rdr.GetInt32(rdr.GetOrdinal("Pro_ID"));
-            }
-            connection.Close();
-            return Pro_ID;
-        }
-
-
-        public SqlDataReader execProc(string Proc)
-        {
-            command = new SqlCommand(Proc, connection);
-            command.CommandType = CommandType.StoredProcedure;
-            connection.Open();
-            // command.Parameters.Clear();
-            SqlDataReader rdr = command.ExecuteReader(CommandBehavior.CloseConnection);// obtener resultados, termina la conexion cuaundo termina el lector de datos
-            return rdr;
-        }
-
-        
     }
-
-    
-
 }

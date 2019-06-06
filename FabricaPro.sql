@@ -26,8 +26,8 @@ CREATE TABLE [Projects]
 (
 	[Pro_ID] int NOT NULL IDENTITY (1, 1),
 	[Name] varchar(100) NOT NULL,
-	[StartDate] date NOT NULL,
-	[EndDate] date NOT NULL,
+	[StartDate] datetime NOT NULL,
+	[EndDate] datetime NOT NULL,
 	[ProyectLeader] varchar(100),
 	[IsActive] bit not null
 )

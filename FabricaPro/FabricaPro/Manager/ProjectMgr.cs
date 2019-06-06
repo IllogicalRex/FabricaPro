@@ -11,10 +11,21 @@ namespace FabricaPro.Manager
     {
         public ProjectDO _projectDO = new ProjectDO();
 
-        // Metodo para Consultar GET
-        public List<ProjectDTO> Get()
+        public List<ProjectDTO> GetAll()
         {
-            return _projectDO.Get();
+            return _projectDO.GetAll();
+        }
+
+        // Metodo para Consultar GET
+        public List<ProjectDTO> Get(int currentPage, int sizeData)
+        {
+            return _projectDO.Get(currentPage, sizeData);
+        }
+
+        public List<ProjectDTO> GetProjectByFilter(ProjectDTO filter)
+        {
+            List<ProjectDTO> data = _projectDO.GetProjectByFilter(filter);
+            return data;
         }
 
         public ProjectDTO GetByID(int id)

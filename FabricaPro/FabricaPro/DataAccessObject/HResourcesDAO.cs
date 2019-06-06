@@ -17,10 +17,10 @@ namespace FabricaPro.DataAccessObject
         {
 
         }
-        public List<HResourcesDTO> GetHResources()
+        public List<HResourcesDTO> GetHResourcesAll()
         {
             List<HResourcesDTO> lista = new List<HResourcesDTO>();
-            command = new SqlCommand("Human_Resources_R", connection);
+            command = new SqlCommand("Human_Resources_RAll", connection);
             command.CommandType = CommandType.StoredProcedure;
             connection.Open();
             SqlDataReader rdr = command.ExecuteReader(CommandBehavior.CloseConnection);
@@ -38,6 +38,53 @@ namespace FabricaPro.DataAccessObject
             }
             connection.Close();
             return lista;
+        }
+
+        public List<HResourcesDTO> GetHResources(int currentPage, int sizeData)
+        {
+            List<HResourcesDTO> lista = new List<HResourcesDTO>();
+            command = new SqlCommand("Human_Resources_R", connection);
+            command.CommandType = CommandType.StoredProcedure;
+            connection.Open();
+            command.Parameters.AddWithValue("@currentPage", currentPage);
+            command.Parameters.AddWithValue("@sizeData", sizeData);
+            SqlDataReader rdr = command.ExecuteReader(CommandBehavior.CloseConnection);
+            HResourcesDTO obj;
+            while (rdr.Read())    // En caso de que exista varios valores de retorno sin usar DataTable
+            {
+                obj = new HResourcesDTO();
+                obj.Rec_ID = rdr.GetInt32(rdr.GetOrdinal("Rec_ID"));
+                obj.Name = rdr.GetString(rdr.GetOrdinal("Name"));
+                obj.LastName = rdr.GetString(rdr.GetOrdinal("LastName"));
+                obj.Position = rdr.GetString(rdr.GetOrdinal("Position"));
+                obj.Email = rdr.GetString(rdr.GetOrdinal("Email"));
+
+                lista.Add(obj);
+            }
+            connection.Close();
+            return lista;
+        }
+
+
+        public HResourcesDTO GetResourceByID(int id)
+        {
+            HResourcesDTO resource = null;
+            command = new SqlCommand("Resource_R_ByID", connection);
+            command.CommandType = CommandType.StoredProcedure;
+            connection.Open();
+            command.Parameters.AddWithValue("@Rec_ID", id);
+            SqlDataReader rdr = command.ExecuteReader(CommandBehavior.CloseConnection);
+            while (rdr.Read())    // En caso de que exista varios valores de retorno sin usar DataTable
+            {
+                resource = new HResourcesDTO();
+                resource.Rec_ID = rdr.GetInt32(rdr.GetOrdinal("Rec_ID"));
+                resource.Name = rdr.GetString(rdr.GetOrdinal("Name"));
+                resource.LastName = rdr.GetString(rdr.GetOrdinal("LastName"));
+                resource.Position = rdr.GetString(rdr.GetOrdinal("Position"));
+                resource.Email = rdr.GetString(rdr.GetOrdinal("Email"));
+            }
+            connection.Close();
+            return resource;
         }
 
         public int PostHResources(HResourcesDTO value)
